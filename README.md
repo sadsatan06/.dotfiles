@@ -10,5 +10,7 @@ fully riiced nixos dotfiles containing -
 6. flake.nix and flake.lock
 7. home.nix
 8. wallpapers
+ <br>
 <b>all the configuration is managed through home-manager</b>
+<br><hr>
 author - sad satan
