@@ -32,6 +32,10 @@
     pkgs.bibata-cursors
     #pkgs.xfce.thunar
     #pkgs.zathura-pdf-poppler
+    pkgs.python3
+    #pkgs.python3Packages.pandas
+    #pkgs.python3Packages.numpy
+    #pkgs.python3Packages.openpyxl
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
