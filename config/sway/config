@@ -3,9 +3,11 @@
 # Copy this to ~/.config/sway/config and edit it to your liking.
 #
 # Read `man 5 sway` for a complete reference.
-for_window [class=".*"] border pixel 2
-#client.focused #FFFDD0 #FFFDD0 #FFFDD0 #FFFDD0
-client.focused #f291e2 #f291e2 #f291e2 #f291e2
+for_window [class=".*"] border pixel 1
+client.focused #FFFDD0 #FFFDD0 #FFFDD0 #FFFDD0
+# Focused window: white border, black background, white text, white indicator
+#client.focused          #ffffff #000000 #ffffff #ffffff
+
 gaps inner 5
 gaps outer 5
 ### Variables
@@ -26,7 +28,7 @@ set $menu tofi-run | xargs swaymsg exec --
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-exec swaybg -i ~/.dotfiles/config/sway/wall/wall6a.png -m fill
+exec swaybg -i ~/.dotfiles/config/sway/wall/wall11.png -m fill
 include /etc/sway/config-vars.d/*
 exec waybar
 input "type:touchpad" {
