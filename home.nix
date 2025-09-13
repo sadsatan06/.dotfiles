@@ -37,9 +37,12 @@
     #pkgs.python3Packages.numpy
     #pkgs.python3Packages.openpyxl
     pkgs.clang-tools
+    pkgs.nodePackages.typescript-language-server
+    pkgs.nodePackages.vscode-langservers-extracted
     pkgs.ripgrep
     pkgs.fd
     pkgs.nodePackages.live-server
+
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -178,10 +181,22 @@ programs.neovim = {
         end
       },
       {
-        "neovim/nvim-lspconfig",
-        config = function()
-          require("lspconfig").clangd.setup {}
-        end
+  "neovim/nvim-lspconfig",
+  config = function()
+    local lspconfig = require("lspconfig")
+
+    -- C / C++
+    lspconfig.clangd.setup {}
+
+    -- JavaScript / TypeScript
+    lspconfig.ts_ls.setup {}
+
+    -- HTML
+    lspconfig.html.setup {}
+
+    -- CSS
+    lspconfig.cssls.setup {}
+  end
       },
       {
         "windwp/nvim-autopairs",
@@ -191,29 +206,34 @@ programs.neovim = {
       },
       { "L3MON4D3/LuaSnip" },
       {
-        "kyazdani42/nvim-tree.lua",
-        config = function()
-          require("nvim-tree").setup {
-            disable_netrw = true,
-            hijack_netrw = true,
-            hijack_cursor = true,
-            update_cwd = true,
-            view = {
-              width = 5,          -- fixed width
-              side = "left",
-              adaptive_size = false, -- prevent auto-resizing
-            },
-          }
-
-          -- Transparent NvimTree
-          vim.cmd("hi NvimTreeNormal guibg=NONE ctermbg=NONE")
-          vim.cmd("hi NvimTreeEndOfBuffer guibg=NONE ctermbg=NONE")
-
-          vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-          vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
-          vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
-        end
+  "kyazdani42/nvim-tree.lua",
+  config = function()
+    require("nvim-tree").setup {
+      disable_netrw = true,
+      hijack_netrw = true,
+      hijack_cursor = true,
+      update_cwd = true,
+      view = {
+        width = 5,            -- fixed width
+        side = "left",
+        adaptive_size = false, -- prevent auto-resizing
       },
+    }
+
+    -- Always transparent highlights
+    vim.cmd([[
+      augroup NvimTreeTransparent
+        autocmd!
+        autocmd FileType NvimTree hi NvimTreeNormal guibg=NONE ctermbg=NONE
+        autocmd FileType NvimTree hi NvimTreeEndOfBuffer guibg=NONE ctermbg=NONE
+      augroup END
+    ]])
+
+    vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+    vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
+    vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
+  end
+},
       {
         "nvim-telescope/telescope.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
