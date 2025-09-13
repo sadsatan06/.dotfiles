@@ -118,84 +118,110 @@ home.pointerCursor = {
       luasnip
     ];
 
-    extraLuaConfig = ''
-      -- Bootstrap lazy.nvim
-      local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-      if not vim.loop.fs_stat(lazypath) then
-        vim.fn.system({
-          "git",
-          "clone",
-          "--filter=blob:none",
-          "https://github.com/folke/lazy.nvim.git",
-          "--branch=stable",
-          lazypath,
-        })
+extraLuaConfig = ''
+  -- Bootstrap lazy.nvim
+  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+      "git",
+      "clone",
+      "--filter=blob:none",
+      "https://github.com/folke/lazy.nvim.git",
+      "--branch=stable",
+      lazypath,
+    })
+  end
+  vim.opt.rtp:prepend(lazypath)
+
+  -- General options
+  vim.opt.termguicolors = true
+  vim.opt.relativenumber = true
+  vim.opt.number = true
+
+  vim.opt.expandtab = true
+  vim.opt.shiftwidth = 4
+  vim.opt.tabstop = 4
+  vim.opt.softtabstop = 4
+
+  -- Plugins via lazy.nvim
+  require("lazy").setup({
+    {
+      "nvim-treesitter/nvim-treesitter",
+      build = ":TSUpdate",
+      config = function()
+        require("nvim-treesitter.configs").setup {
+          highlight = { enable = true },
+          indent = { enable = true },
+        }
       end
-      vim.opt.rtp:prepend(lazypath)
+    },
+    {
+      "neovim/nvim-lspconfig",
+      config = function()
+        require("lspconfig").clangd.setup {}
+      end
+    },
+    {
+      "windwp/nvim-autopairs",
+      config = function()
+        require("nvim-autopairs").setup {}
+      end
+    },
+    { "L3MON4D3/LuaSnip" },
+    {
+      "kyazdani42/nvim-tree.lua",
+      config = function()
+        require("nvim-tree").setup {
+          disable_netrw = true,
+          hijack_netrw = true,  
+          hijack_cursor = true,
+          update_cwd = true,
+          view = { width = 10, side = "left", adaptive_size = false },
+        }
+        vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
+        vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
+      end
+    },
+    {
+      "akinsho/toggleterm.nvim", version = "*",
+      config = function()
+        require("toggleterm").setup{
+          size = 15,
+          open_mapping = [[<C-t>]],
+          hide_numbers = true,
+          shade_terminals = true,
+          start_in_insert = true,
+          insert_mappings = true,
+          terminal_mappings = true,
+          direction = "horizontal",
+        }
+      end
+    },
+    {
+      "folke/tokyonight.nvim",
+      config = function()
+        require("tokyonight").setup({
+          style = "night", -- choices: storm, night, moon, day
+          transparent = true,
+          styles = {
+            sidebars = "transparent",
+            floats = "transparent",
+          },
+        })
+        vim.cmd.colorscheme "tokyonight"
+      end
+    },
+  })
 
-      -- General options
-      vim.opt.termguicolors = true
-      vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
-      vim.cmd("hi NormalNC guibg=NONE ctermbg=NONE")
-      vim.cmd("hi NormalFloat guibg=NONE")
-
-      vim.opt.expandtab = true
-      vim.opt.shiftwidth = 4
-      vim.opt.tabstop = 4
-      vim.opt.softtabstop = 4
-
-      -- Plugins via lazy.nvim
-      require("lazy").setup({
-        {
-          "nvim-treesitter/nvim-treesitter",
-          build = ":TSUpdate",
-          config = function()
-            require("nvim-treesitter.configs").setup {
-              highlight = { enable = true },
-              indent = { enable = true },
-            }
-          end
-        },
-        {
-          "neovim/nvim-lspconfig",
-          config = function()
-            require("lspconfig").clangd.setup {}
-          end
-        },
-        {
-          "windwp/nvim-autopairs",
-          config = function()
-            require("nvim-autopairs").setup {}
-          end
-        },
-        { "L3MON4D3/LuaSnip" },
-        {
-          "kyazdani42/nvim-tree.lua",
-          config = function()
-            require("nvim-tree").setup {
-              disable_netrw = true,
-              hijack_netrw = true,  
-              hijack_cursor = true,
-              update_cwd = true,
-              view = { width = 10, side = "left", adaptive_size = false },
-            }
-            vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-            vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
-            vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
-
-          end
-        },
-      })
-
-      -- F5 keymap for C++
-      vim.keymap.set("n", "<F5>", function()
-        local file = vim.fn.expand("%")
-        local out = vim.fn.expand("%:r")
-        vim.cmd("terminal g++ " .. file .. " -o " .. out .. " && ./" .. out)
-      end, { noremap = true })
-    '';
-  };
-
+  -- F5 keymap for C++
+  vim.keymap.set("n", "<F5>", function()
+    local file = vim.fn.expand("%")
+    local out = vim.fn.expand("%:r")
+    vim.cmd("terminal g++ " .. file .. " -o " .. out .. " && ./" .. out)
+  end, { noremap = true })
+'';
+};
   #sway
   xdg.configFile."sway/config".source = ./config/sway/config;
   #tofi
