@@ -106,7 +106,7 @@ home.pointerCursor = {
   };
 
 
- programs.neovim = {
+programs.neovim = {
   enable = true;
   viAlias = true;
   vimAlias = true;
@@ -140,7 +140,7 @@ home.pointerCursor = {
     vim.opt.termguicolors = true
     vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
     vim.cmd("hi NormalNC guibg=NONE ctermbg=NONE")
-    vim.cmd("hi NormalFloat guibg=NONE")
+    vim.cmd("hi NormalFloat guibg=NONE ctermbg=NONE")
 
     vim.opt.expandtab = true
     vim.opt.shiftwidth = 4
@@ -182,8 +182,17 @@ home.pointerCursor = {
             hijack_netrw = true,
             hijack_cursor = true,
             update_cwd = true,
-            view = { width = 10, side = "left", adaptive_size = false },
+            view = {
+              width = 5,          -- fixed width
+              side = "left",
+              adaptive_size = false, -- prevent auto-resizing
+            },
           }
+
+          -- Transparent NvimTree
+          vim.cmd("hi NvimTreeNormal guibg=NONE ctermbg=NONE")
+          vim.cmd("hi NvimTreeEndOfBuffer guibg=NONE ctermbg=NONE")
+
           vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
           vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
           vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
@@ -211,7 +220,6 @@ home.pointerCursor = {
               python = "cd $dir && python3 $fileName",
               javascript = "cd $dir && node $fileName",
               html = "cd $dir && live-server --quiet --open=$fileName",
-
               sh = "cd $dir && bash $fileName",
             },
           })
@@ -235,12 +243,34 @@ home.pointerCursor = {
             open_mapping = [[<C-t>]],
             direction = "horizontal",
             size = 5,
+            shade_terminals = false,  -- disable shading for transparency
           }
+
+          -- Transparent terminal background
+          vim.cmd("hi NormalFloat guibg=NONE ctermbg=NONE")
+          vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
+
+          -- Keymaps to navigate between panes from terminal
+          function _G.set_terminal_keymaps()
+            local opts = { buffer = 0 }
+            vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], opts)
+            vim.keymap.set('t', '<C-j>', [[<C-\><C-n><C-w>j]], opts)
+            vim.keymap.set('t', '<C-k>', [[<C-\><C-n><C-w>k]], opts)
+            vim.keymap.set('t', '<C-l>', [[<C-\><C-n><C-w>l]], opts)
+          end
+          vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
         end
       },
     })
+
+    -- General window navigation remaps (file <-> tree <-> terminal)
+    vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true })
+    vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true })
+    vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
+    vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true })
   '';
 };
+
   #sway
   xdg.configFile."sway/config".source = ./config/sway/config;
   #tofi
