@@ -105,7 +105,23 @@ home.pointerCursor = {
     XCURSOR_SIZE  = "28";
   };
 
+#git config
 
+  programs.git = {
+    enable = true;
+
+    userName  = "sadsatan06"; 
+    userEmail = "anaghpandey03328@gmail.com";
+
+
+  };
+
+
+
+
+
+
+#nvim config
 programs.neovim = {
   enable = true;
   viAlias = true;
