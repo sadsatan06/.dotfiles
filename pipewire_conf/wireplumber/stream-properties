@@ -1,0 +1,18 @@
+[stream-properties]
+Audio/Sink:node.name:alsa_output.pci-0000_00_1b.0.pro-output-0={"channelVolumes":[1.000000, 1.000000], "channelMap":["AUX0", "AUX1"]}
+Audio/Sink:node.name:auto_null={"channelVolumes":[1.000000, 1.000000], "channelMap":["FL", "FR"], "mute":false, "volume":1.000000}
+Audio/Source:media.name:Remapped\salsa_input.pci-0000_00_1b.0\ssource\soutput={"channelMap":["FL", "FR"], "mute":false, "channelVolumes":[0.972560, 0.972560], "volume":1.000000}
+Audio/Source:node.name:alsa_input.pci-0000_00_1b.0.pro-input-0={"channelVolumes":[1.000000, 1.000000], "channelMap":["AUX0", "AUX1"]}
+Input/Audio:application.id:org.PulseAudio.pavucontrol={"channelVolumes":[1.000000], "channelMap":["MONO"], "mute":false, "volume":1.000000}
+Input/Audio:application.name:Firefox={"channelVolumes":[1.000000, 1.000000], "channelMap":["FL", "FR"], "mute":false, "volume":1.000000}
+Input/Audio:application.name:WEBRTC\sVoiceEngine={"channelVolumes":[0.865531, 0.865531], "volume":1.000000, "mute":false, "channelMap":["FL", "FR"]}
+Input/Audio:media.name:Remapped\salsa_input.pci-0000_00_1b.0\ssource\sinput={"channelVolumes":[1.000000, 1.000000], "mute":false, "volume":1.000000, "channelMap":["FL", "FR"]}
+Input/Audio:media.role:Music={"volume":1.000000, "mute":false, "channelVolumes":[1.000000, 1.000000], "channelMap":["FL", "FR"]}
+Output/Audio:application.name:Chromium={"channelVolumes":[1.000000, 1.000000], "channelMap":["FL", "FR"], "mute":false, "volume":1.000000}
+Output/Audio:application.name:Firefox={"channelVolumes":[1.000000, 1.000000], "volume":1.000000, "mute":false, "channelMap":["FL", "FR"]}
+Output/Audio:application.name:PipeWire\sALSA\s\o.aplay-wrapped\c={"channelVolumes":[1.000000, 1.000000], "mute":false, "volume":1.000000, "channelMap":["FL", "FR"]}
+Output/Audio:application.name:WEBRTC\sVoiceEngine={"channelVolumes":[1.000000, 1.000000], "volume":1.000000, "mute":false, "channelMap":["FL", "FR"]}
+Output/Audio:application.name:eSpeak={"channelVolumes":[1.000000], "volume":1.000000, "mute":false, "channelMap":["MONO"]}
+Output/Audio:application.name:libao\osd_dummy\c={"channelVolumes":[1.000000, 1.000000], "volume":1.000000, "mute":false, "channelMap":["FL", "FR"]}
+Output/Audio:media.role:Movie={"channelMap":["FL", "FR"], "volume":1.000000, "channelVolumes":[1.000000, 1.000000], "mute":false}
+Output/Audio:media.role:Music={"channelMap":["FL", "FR"], "mute":false, "volume":1.000000, "channelVolumes":[1.000000, 1.000000]}

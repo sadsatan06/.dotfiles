@@ -14,6 +14,8 @@
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "25.05"; # Please read the comment before changing.
+  nixpkgs.config.allowUnfree = true;
+  
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -43,6 +45,7 @@
     pkgs.fd
     pkgs.nodePackages.live-server
     pkgs.nodejs
+    pkgs.wl-clipboard
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -56,6 +59,9 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+  # in home.nix
+
+
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -124,13 +130,15 @@ home.pointerCursor = {
 
 
 
-#nvim config
 programs.neovim = {
   enable = true;
   viAlias = true;
   vimAlias = true;
   withNodeJs = true;
   withPython3 = true;
+
+  # Pull in wl-clipboard so we can actually copy/paste outside Neovim
+  extraPackages = with pkgs; [ wl-clipboard ];
 
   plugins = with pkgs.vimPlugins; [
     nvim-treesitter
@@ -157,16 +165,53 @@ programs.neovim = {
 
     -- General options
     vim.opt.termguicolors = true
-    vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
-    vim.cmd("hi NormalNC guibg=NONE ctermbg=NONE")
-    vim.cmd("hi NormalFloat guibg=NONE ctermbg=NONE")
-
     vim.opt.expandtab = true
     vim.opt.shiftwidth = 4
     vim.opt.tabstop = 4
     vim.opt.softtabstop = 4
     vim.opt.relativenumber = true
     vim.opt.number = true
+
+    -- Transparent background tweaks
+    vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
+    vim.cmd("hi NormalNC guibg=NONE ctermbg=NONE")
+    vim.cmd("hi NormalFloat guibg=NONE ctermbg=NONE")
+
+    -- Clipboard integration for Wayland/X11
+    if vim.fn.executable("wl-copy") == 1 then
+      vim.g.clipboard = {
+        name = "wl-clipboard",
+        copy = {
+          ["+"] = "wl-copy --type text/plain",
+          ["*"] = "wl-copy --type text/plain",
+        },
+        paste = {
+          ["+"] = "wl-paste --no-newline",
+          ["*"] = "wl-paste --no-newline",
+        },
+        cache_enabled = 0,
+      }
+    elseif vim.fn.executable("xclip") == 1 then
+      vim.g.clipboard = {
+        name = "xclip",
+        copy = {
+          ["+"] = "xclip -selection clipboard",
+          ["*"] = "xclip -selection primary",
+        },
+        paste = {
+          ["+"] = "xclip -selection clipboard -o",
+          ["*"] = "xclip -selection primary -o",
+        },
+        cache_enabled = 0,
+      }
+    end
+
+    -- Default all yank/delete/put to system clipboard
+    vim.opt.clipboard = "unnamedplus"
+
+    -- Handy keymaps to still access internal registers
+    vim.keymap.set("n", "<leader>y", "\"0y", { noremap = true, silent = true }) -- yank to vim-only register
+    vim.keymap.set("n", "<leader>d", "\"_d", { noremap = true, silent = true }) -- delete without polluting clipboard
 
     -- Plugins via lazy.nvim
     require("lazy").setup({
@@ -181,22 +226,22 @@ programs.neovim = {
         end
       },
       {
-  "neovim/nvim-lspconfig",
-  config = function()
-    local lspconfig = require("lspconfig")
+        "neovim/nvim-lspconfig",
+        config = function()
+          local lspconfig = require("lspconfig")
 
-    -- C / C++
-    lspconfig.clangd.setup {}
+          -- C / C++
+          lspconfig.clangd.setup {}
 
-    -- JavaScript / TypeScript
-    lspconfig.ts_ls.setup {}
+          -- JavaScript / TypeScript
+          lspconfig.ts_ls.setup {}
 
-    -- HTML
-    lspconfig.html.setup {}
+          -- HTML
+          lspconfig.html.setup {}
 
-    -- CSS
-    lspconfig.cssls.setup {}
-  end
+          -- CSS
+          lspconfig.cssls.setup {}
+        end
       },
       {
         "windwp/nvim-autopairs",
@@ -206,43 +251,61 @@ programs.neovim = {
       },
       { "L3MON4D3/LuaSnip" },
       {
-  "kyazdani42/nvim-tree.lua",
-  config = function()
-    require("nvim-tree").setup {
-      disable_netrw = true,
-      hijack_netrw = true,
-      hijack_cursor = true,
-      update_cwd = true,
-      view = {
-        width = 5,            -- fixed width
-        side = "left",
-        adaptive_size = false, -- prevent auto-resizing
-      },
-    }
-
-    -- Always transparent highlights
-    vim.cmd([[
-      augroup NvimTreeTransparent
-        autocmd!
-        autocmd FileType NvimTree hi NvimTreeNormal guibg=NONE ctermbg=NONE
-        autocmd FileType NvimTree hi NvimTreeEndOfBuffer guibg=NONE ctermbg=NONE
-      augroup END
-    ]])
-
-    vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-    vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
-    vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
-  end
-},
-      {
-        "nvim-telescope/telescope.nvim",
-        dependencies = { "nvim-lua/plenary.nvim" },
+        "kyazdani42/nvim-tree.lua",
         config = function()
-          local telescope = require("telescope.builtin")
-          vim.keymap.set("n", "<C-p>", telescope.find_files, {})
-          vim.keymap.set("n", "<C-f>", telescope.live_grep, {})
+          require("nvim-tree").setup {
+            disable_netrw = true,
+            hijack_netrw = true,
+            hijack_cursor = true,
+            update_cwd = true,
+            view = {
+              width = 5,
+              side = "left",
+              adaptive_size = false,
+            },
+          }
+
+          -- Transparent tree
+          vim.cmd([[
+            augroup NvimTreeTransparent
+              autocmd!
+              autocmd FileType NvimTree hi NvimTreeNormal guibg=NONE ctermbg=NONE
+              autocmd FileType NvimTree hi NvimTreeEndOfBuffer guibg=NONE ctermbg=NONE
+            augroup END
+          ]])
+
+          vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
+          vim.keymap.set("n", "<C-Left>", ":NvimTreeResize -5<CR>", { noremap = true, silent = true })
+          vim.keymap.set("n", "<C-Right>", ":NvimTreeResize +5<CR>", { noremap = true, silent = true })
         end
       },
+      {
+  "nvim-telescope/telescope.nvim",
+  dependencies = { "nvim-lua/plenary.nvim" },
+  config = function()
+    local telescope = require("telescope")
+    local builtin = require("telescope.builtin")
+
+    telescope.setup({
+      pickers = {
+        find_files = {
+          hidden = true,      -- show dotfiles and files in dot-dirs
+          no_ignore = true,   -- also show files ignored by .gitignore
+        },
+        live_grep = {
+          additional_args = function(_)
+            return { "--hidden" }  -- search in hidden files
+          end,
+        },
+      },
+    })
+
+    -- keymaps
+    vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "Find files (with hidden)" })
+    vim.keymap.set("n", "<C-f>", builtin.live_grep, { desc = "Live grep (with hidden)" })
+  end
+},
+
       {
         "CRAG666/code_runner.nvim",
         config = function()
@@ -279,14 +342,13 @@ programs.neovim = {
             open_mapping = [[<C-t>]],
             direction = "horizontal",
             size = 5,
-            shade_terminals = false,  -- disable shading for transparency
+            shade_terminals = false,
           }
 
-          -- Transparent terminal background
           vim.cmd("hi NormalFloat guibg=NONE ctermbg=NONE")
           vim.cmd("hi Normal guibg=NONE ctermbg=NONE")
 
-          -- Keymaps to navigate between panes from terminal
+          -- Keymaps to move between splits
           function _G.set_terminal_keymaps()
             local opts = { buffer = 0 }
             vim.keymap.set('t', '<C-h>', [[<C-\><C-n><C-w>h]], opts)
@@ -299,7 +361,7 @@ programs.neovim = {
       },
     })
 
-    -- General window navigation remaps (file <-> tree <-> terminal)
+    -- General window navigation
     vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true })
     vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true })
     vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
@@ -317,8 +379,9 @@ programs.neovim = {
   xdg.configFile."waybar/style.css".source = ./config/waybar/style.css;
   xdg.configFile."waybar/config".source = ./config/waybar/config;
   #neovim
+  
 
-
+ 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 }

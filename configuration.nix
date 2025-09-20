@@ -17,7 +17,11 @@
 services.printing.drivers = with pkgs; [
   foo2zjs
 ];
+  boot.extraModprobeConfig = "
+   options snd-hda-intel model=headset-mic
+  ";
 
+  
 
   networking.hostName = "sadsatan"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -110,7 +114,8 @@ services.printing.drivers = with pkgs; [
    git
    gcc
    gdb
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+   discord
+     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   ];
   services.xserver.enable = true;
