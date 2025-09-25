@@ -5,7 +5,7 @@
   # manage.
   home.username = "anagh";
   home.homeDirectory = "/home/anagh";
-
+  
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -46,6 +46,8 @@
     pkgs.nodePackages.live-server
     pkgs.nodejs
     pkgs.wl-clipboard
+    pkgs.ranger
+  #pkgs.notion-app
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -62,7 +64,7 @@
   # in home.nix
 
 
-
+  nixpkgs.config.allowUnsupportedSystem = true;
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
   home.file = {
@@ -125,6 +127,8 @@ home.pointerCursor = {
 
   };
 
+
+     
 
 
 
@@ -367,8 +371,8 @@ programs.neovim = {
     vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
     vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true })
   '';
-};
-
+}; 
+  
   #sway
   xdg.configFile."sway/config".source = ./config/sway/config;
   #tofi
@@ -379,7 +383,9 @@ programs.neovim = {
   xdg.configFile."waybar/style.css".source = ./config/waybar/style.css;
   xdg.configFile."waybar/config".source = ./config/waybar/config;
   #neovim
-  
+  #hyprland
+  #xdg.configFile."hypr/hyprland.conf".source = ./config/hyprland/hyprland.conf;
+
 
  
   # Let Home Manager install and manage itself.

@@ -28,7 +28,7 @@ set $menu tofi-run | xargs swaymsg exec --
 bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-exec swaybg -i ~/.dotfiles/config/sway/wall/wall11.png -m fill
+exec swaybg -i ~/.dotfiles/config/sway/wall/wall13.png -m fill
 include /etc/sway/config-vars.d/*
 exec waybar
 input "type:touchpad" {

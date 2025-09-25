@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
-
+    nixpkgs.config.allowUnsupportedSystem = true;
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -58,6 +58,16 @@ services.printing.drivers = with pkgs; [
   ];
 
 
+  
+
+ services.syncthing = {
+  enable = true;
+  user = "anagh"; # your Linux username
+  dataDir = "/home/anagh"; # base dir for Syncthing data
+  configDir = "/home/anagh/.dotfiles/config/syncthing"; # config storage
+  #openDefaultPorts = true; # auto open firewall ports
+};
+
 
 
 
@@ -79,7 +89,7 @@ services.printing.drivers = with pkgs; [
   users.users.anagh = {
     isNormalUser = true;
     description = "anagh";
-    extraGroups = [ "networkmanager" "wheel" "seat" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "seat" "input" "docker" ];
     packages = with pkgs; [];
   };
 
@@ -94,10 +104,12 @@ services.printing.drivers = with pkgs; [
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-   sway
+   sway 
    tofi
    neovim
    foot
+
+   #notion-app
    obsidian
    ffmpeg
    firefox
@@ -108,12 +120,13 @@ services.printing.drivers = with pkgs; [
    pavucontrol
    acpi 
    waybar
-   swaylock
+   hyprlock
    swaybg
    vscode
    git
    gcc
    gdb
+   glibc
    discord
      #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
@@ -122,12 +135,13 @@ services.printing.drivers = with pkgs; [
   services.displayManager.sddm.enable = true;
   programs.sway.enable = true;
   security.polkit.enable = true;
-  security.pam.services.swaylock = {};
+  security.pam.services.hyprlock = {};
   xdg.portal.enable = true;
   xdg.portal.wlr.enable = true;  
   services.seatd.enable = true;
   #services.logind.enable = true;
 
+  #virtualisation.docker.enable=true;
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
